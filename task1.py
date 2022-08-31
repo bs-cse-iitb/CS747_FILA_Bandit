@@ -69,15 +69,42 @@ class UCB(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
+
+        #num_arms no. of arms
+        # ucb : ucb values of each arm
+        self.ucb = np.zeros(num_arms)
+        #counts : no. of pull of each arm
+        self.counts = np.zeros(num_arms)
+        # mean : empirical mean
+        self.mean = np.zeros(num_arms)
+        self.h = 0
+        # END EDITING HERE
         # END EDITING HERE
     
     def give_pull(self):
         # START EDITING HERE
-        return 0
+        if (self.h < self.num_arms):
+            return self.h
+        return np.argmax(self.ucb)
         # END EDITING HERE
     
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
+
+        # empirical means of arm_index    
+        p_ = self.mean[arm_index]
+        u = self.counts[arm_index]
+        self.mean[arm_index]= (p_ * u + reward ) / (u+1) 
+
+
+        self.counts[arm_index]+=1
+        self.h+=1
+
+        if (self.h >= self.num_arms):
+            ln = math.log(self.h)
+            for arm in range(self.num_arms):
+                add_to_mean = math.sqrt((2*ln)/self.counts[arm])
+                self.ucb[arm]= self.mean[arm_index] + add_to_mean
         pass
         # END EDITING HERE
 
@@ -86,6 +113,11 @@ class KL_UCB(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
+        #num_arms no. of arms
+
+        self.ucb = np.zeros(num_arms)
+        #no. of pull of each arm
+        self.counts = np.zeros(num_arms)
         # END EDITING HERE
     
     def give_pull(self):
@@ -104,22 +136,28 @@ class Thompson_Sampling(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
+        #num_arms no. of arms
+        #success no. of success of each arm
         self.success = np.zeros(num_arms)
-        self.count = np.zeros(num_arms)
+        #no. of pull of each arm
+        self.counts = np.zeros(num_arms)
         # END EDITING HERE
     
     def give_pull(self):
         # START EDITING HERE
         np.random.seed(0)
+        #sample : array to store sample value from beta distribution
         sample = np.zeros(self.num_arms)
+        #arm : index sarting from zero
+        # for every arm a draw as sample from beta
         for arm in range(self.num_arms):
-            sample[arm]=np.random.beta(self.success[arm]+1,self.count[arm]-self.success[arm]+1)
+            sample[arm]=np.random.beta(self.success[arm]+1,self.counts[arm]-self.success[arm]+1)
         return np.argmax(sample)
         # END EDITING HERE
     
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        self.count[arm_index]+=1
+        self.counts[arm_index]+=1
         if reward==1:
             self.success[arm_index]+=1
 
