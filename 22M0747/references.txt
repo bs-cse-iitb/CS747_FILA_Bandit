@@ -1,0 +1,3 @@
+previous learning and assignment
+class slides ucb, kl_ucb, thompson_sampling 
+online video of sir for previous offering of course

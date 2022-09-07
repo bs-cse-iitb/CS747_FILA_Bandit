@@ -18,6 +18,7 @@ This file contains the AlgorithmManyArms class. Here are the method details:
         (The value of arm_index is the same as the one returned by give_pull.)
 """
 
+from socket import AddressFamily
 import numpy as np
 
 # START EDITING HERE
@@ -28,13 +29,67 @@ class AlgorithmManyArms:
     def __init__(self, num_arms, horizon):
         self.num_arms = num_arms
         # Horizon is same as number of arms
-    
+        #self.arms = np.array(range(self.num_arms))
+        #self.success =np.zeros(self.num_arms)
+        self.counts = np.zeros(self.num_arms)
+        self.mean = np.zeros(self.num_arms)
+        #self.counter=0
+        #self.limit = 0.9
     def give_pull(self):
         # START EDITING HERE
+
+        # for i in range(self.num_arms)
+        # if np.argmax(self.mean)>0.9:
+        #     return np.argmax(self.mean)
+
+        # 
+
+        highest_mean = np.argmax(self.mean)
+        if self.mean[highest_mean] > (1-1/self.num_arms):  # 0.99  for last 300
+            return highest_mean
+        else:
+            return np.random.randint(self.num_arms) 
+
+        # sample = np.zeros(len(self.arms))
+        # for arm in range(len(self.arms)):
+        #     sample[arm]=np.random.beta(self.success[arm]+1,1)
+        # #print(sample)
+        # return self.arms[np.argmax(sample)]
         raise NotImplementedError
         # END EDITING HERE
     
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        raise NotImplementedError
+        
+        #print(arm_index, reward)
+        #print(self.arms)
+
+        p_ = self.mean[arm_index]
+        u = self.counts[arm_index]
+        self.mean[arm_index]= (p_ * u + reward ) / (u+1)
+
+        self.counts[arm_index]+=1
+
+
+
+        # index = np.where(self.arms==arm_index)
+        # self.counts[index]+=1
+        # if reward == 0:
+        #     self.arms = np.delete(self.arms,index)
+        #     self.success = np.delete(self.success, index)
+        #     self.counts  = np.delete(self.counts, index)
+        #     self.mean = np.delete(self.mean, index)
+        # else:
+        #     self.success[index]+=1
+        #     p_ = self.mean[index]
+        #     u = self.counts[index]
+        #     self.mean[index]= (p_ * (u-1) + reward ) / u
+        
+        #print(self.mean)
+        #print(self.counts)
+
+
+        
+        # self.counts[arm_index]+=1
+        #raise NotImplementedError
         # END EDITING HERE

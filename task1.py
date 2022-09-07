@@ -83,6 +83,8 @@ class UCB(Algorithm):
     
     def give_pull(self):
         # START EDITING HERE
+        #print(self.h)
+        #Pulling arm serial wise for first n pull
         if (self.h < self.num_arms):
             return self.h
         return np.argmax(self.ucb)
@@ -96,17 +98,59 @@ class UCB(Algorithm):
         u = self.counts[arm_index]
         self.mean[arm_index]= (p_ * u + reward ) / (u+1) 
 
+        #print(self.mean)
 
         self.counts[arm_index]+=1
         self.h+=1
 
-        if (self.h >= self.num_arms):
+        # mistake 1 >=  instead of >
+        if (self.h > self.num_arms):
             ln = math.log(self.h)
             for arm in range(self.num_arms):
                 add_to_mean = math.sqrt((2*ln)/self.counts[arm])
-                self.ucb[arm]= self.mean[arm_index] + add_to_mean
-        pass
+                self.ucb[arm]= self.mean[arm] + add_to_mean
+                # second mistake self.mean[arm_index] instead of self.mean[arm]
         # END EDITING HERE
+
+
+def kl(x,y):
+    if x==0:
+        kl_value = -math.log((1-y))
+        return kl_value
+    if x==1:
+        kl_value = -math.log(y)
+        return kl_value
+    else:
+        ln1 = math.log(x/y)
+        ln2 = math.log((1-x)/(1-y))
+        kl_value = x * ln1 + (1-x) * ln2 
+        return kl_value
+
+def bs(p_,start,end,kl_p_q):
+    # middle = (start + end)/2
+    # #print(middle)
+    # kl_p_m = kl(p_,middle)
+    # #print(kl_p_m , kl_p_q)
+    # #return 0.5
+    # if abs(start-end) < 0.001 or abs(kl_p_m-kl_p_q) < 0.001:
+    #     return middle
+    # elif(kl_p_m > kl_p_q ):
+    #     return bs(p_,start,middle,kl_p_q) # return not written very big mistake
+    # else:
+    #     return bs(p_,middle,end,kl_p_q)
+
+    middle = (start + end)/2
+    kl_p_m = kl(p_,middle)
+    while(abs(start-end) > 0.001 and abs(kl_p_m-kl_p_q) > 0.001):
+        if(kl_p_m > kl_p_q ):
+            end = middle
+        else:
+            start = middle
+        middle = (start + end)/2
+        kl_p_m = kl(p_,middle)
+    return middle
+
+
 
 class KL_UCB(Algorithm):
     def __init__(self, num_arms, horizon):
@@ -115,20 +159,47 @@ class KL_UCB(Algorithm):
         # START EDITING HERE
         #num_arms no. of arms
 
-        self.ucb = np.zeros(num_arms)
-        #no. of pull of each arm
-        self.counts = np.zeros(num_arms)
+        self.counts =np.zeros(num_arms)
+        self.mean = np.zeros(num_arms)
+        self.h = 0
+        self.klucb = np.zeros(num_arms)
+
+
         # END EDITING HERE
     
     def give_pull(self):
-        # START EDITING HERE
-        return 0
+        # START EDITING HERE 
+
+        if self.h < self.num_arms:
+            return self.h 
+        return np.argmax(self.klucb)
         # END EDITING HERE
     
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
-        pass
+        # empirical means of arm_index 
+        self.h+=1
+        self.counts[arm_index]+=1  
+        p_ = self.mean[arm_index] 
+        u = self.counts[arm_index]
+        self.mean[arm_index]= ((u-1)* p_ + reward) / u
+
+        if self.h < self.num_arms:
+            return
+        ln_t = math.log(self.h)
+        lnln_t = math.log(ln_t)
+        c = 3
+        ln_final = (ln_t + c * lnln_t)
+        q = 0.999
+
+        if (self.h > self.num_arms):
+            for arm in range(self.num_arms):
+                kl_p_q = ln_final / self.counts[arm]
+                self.klucb[arm] = bs(self.mean[arm],self.mean[arm],q,kl_p_q)
+
+        
         # END EDITING HERE
+
 
 
 class Thompson_Sampling(Algorithm):
@@ -136,29 +207,39 @@ class Thompson_Sampling(Algorithm):
         super().__init__(num_arms, horizon)
         # You can add any other variables you need here
         # START EDITING HERE
-        #num_arms no. of arms
-        #success no. of success of each arm
         self.success = np.zeros(num_arms)
-        #no. of pull of each arm
         self.counts = np.zeros(num_arms)
+        #self.beta = np.random.beta(1,1,num_arms)
         # END EDITING HERE
     
     def give_pull(self):
         # START EDITING HERE
-        np.random.seed(0)
+        #np.random.seed(0)
+        #by using random.seed(0) regret goes negative
         #sample : array to store sample value from beta distribution
-        sample = np.zeros(self.num_arms)
         #arm : index sarting from zero
-        # for every arm a draw as sample from beta
-        for arm in range(self.num_arms):
-            sample[arm]=np.random.beta(self.success[arm]+1,self.counts[arm]-self.success[arm]+1)
-        return np.argmax(sample)
+
+
+        # for every arm a draw  sample from beta distribution
+        # sample = np.zeros(self.num_arms)
+        # for arm in range(self.num_arms):
+        #     sample[arm]=np.random.beta(self.success[arm]+1,self.counts[arm]-self.success[arm]+1)
+        # #print(sample)
+        # return np.argmax(sample)
+        
+        
+
+        # in one line
+        return np.argmax(np.random.beta(self.success+1,self.counts-self.success+1))
+
         # END EDITING HERE
-    
+
     def get_reward(self, arm_index, reward):
         # START EDITING HERE
         self.counts[arm_index]+=1
-        if reward==1:
+        if reward == 1:
             self.success[arm_index]+=1
-
+            
+        #self.beta[arm_index]=np.random.beta(self.success[arm_index]+1,self.counts[arm_index]-self.success[arm_index]+1)
+        #print("arm : {} rew : {} success: {} failure {} counts : {} ".format(arm_index,reward,self.success, self.beta,self.counts))
         # END EDITING HERE

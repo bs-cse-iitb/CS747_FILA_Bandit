@@ -62,6 +62,8 @@ def task1(algorithm, probs, num_sims=50):
   """generates the plots and regrets for task1
   """
   horizons = [2**i for i in range(10, 19)]
+  #horizons = [2**i for i in range(10, 15)]
+
   regrets = []
   for horizon in horizons:
     regrets.append(simulate(algorithm, probs, horizon, num_sims))
@@ -112,11 +114,14 @@ if __name__ == '__main__':
   random.shuffle(probs)
   
   #task1(Eps_Greedy, probs)
-  # task1(UCB, probs)
-  # task1(KL_UCB, probs)
-  task1(Thompson_Sampling, probs)
+  #task1(UCB, probs)
+  tic = time.time()
+  task1(KL_UCB, probs)
+  toc = time.time()
+  print(toc-tic)
+  #task1(Thompson_Sampling, probs)
 
   # task2(AlgorithmBatched, probs)
 
-  # task3(AlgorithmManyArms)
+  #task3(AlgorithmManyArms)
 
