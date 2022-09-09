@@ -1,0 +1,41 @@
+ucb
+[227.37999999999437, 345.35999999998273, 489.79999999996164, 653.3600000001206, 826.3000000004931, 1009.9800000012382, 1185.8600000027282, 1361.4400000057087, 1495.700000011669]
+
+root@fb7d53abbb5c:/host/bandit# python3 autograder.py --task all
+================== Task 1 ==================
+Testcase 1
+UCB               : PASSED. Regret: 31.16
+KL-UCB            : PASSED. Regret: 3.60
+Thompson Sampling : PASSED. Regret: 7.24
+
+Testcase 2
+UCB               : PASSED. Regret: 365.06
+KL-UCB            : PASSED. Regret: 126.55
+Thompson Sampling : PASSED. Regret: 67.36
+
+Testcase 3
+UCB               : PASSED. Regret: 447.64
+KL-UCB            : PASSED. Regret: 118.40
+Thompson Sampling : PASSED. Regret: 70.60
+
+================== Task 2 ==================
+Testcase 1
+Batched Algorithm: PASSED. Regret: 59.20
+
+Testcase 2
+Batched Algorithm: PASSED. Regret: 77.04
+
+Testcase 3
+Batched Algorithm: PASSED. Regret: 116.64
+
+================== Task 3 ==================
+Testcase 1
+Many Arms Algorithm: PASSED. Regret: 114.98
+
+Testcase 2
+Many Arms Algorithm: PASSED. Regret: 175.96
+
+Testcase 3
+Many Arms Algorithm: PASSED. Regret: 247.64
+
+Time elapsed: 778.48 seconds

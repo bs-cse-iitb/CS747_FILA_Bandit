@@ -44,33 +44,7 @@ class AlgorithmBatched:
     def give_pull(self):
         # START EDITING HERE
         #print(self.batch_size)
-
-
-        # arm_to_pull = np.array([])
-        # arm_count = np.array([])
-
-        ls = []
-        for _ in range(self.batch_size):
-            failure = self.counts-self.success 
-            sample=np.random.beta(self.success+1,failure+1)
-            #print(sample)
-            ls.append(np.argmax(sample))
-            # if index in arm_to_pull:
-            #     index2 = np.where(arm_count==index)
-            #     arm_count[index2]+=1
-            #     print(arm_count[index2])
-            #     #arm_count[index2]+=1
-            # else:
-            #     arm_to_pull = np.append(arm_to_pull,index)
-            #     arm_count = np.append(arm_count,1)
-                #print(arm_count)
-
-
-        #arm_to_pull , arm_count = np.unique(ls, return_counts = True)
-
-        #print(arm_to_pull,arm_count)
         
-
     
         # ls = []
         # batch = self.batch_size
@@ -94,9 +68,36 @@ class AlgorithmBatched:
         # #print(max_k)
 
         # max_k = sample.argsort()[-3:][::-1]
-        #return arm_to_pull,arm_count
+
+        # arm_to_pull = np.array([])
+        # arm_count = np.array([])
+
+        ls = []
+        for _ in range(self.batch_size): 
+            sample=np.zeros(self.num_arms)
+            for arm in range(self.num_arms):
+                failure = self.counts[arm]-self.success[arm]
+                sample[arm]=np.random.beta(self.success[arm]+1,failure+1)
+            #print(sample)
+            ls.append(np.argmax(sample))
+            # if index in arm_to_pull:
+            #     index2 = np.where(arm_count==index)
+            #     arm_count[index2]+=1
+            #     print(arm_count[index2])
+            #     #arm_count[index2]+=1
+            # else:
+            #     arm_to_pull = np.append(arm_to_pull,index)
+            #     arm_count = np.append(arm_count,1)
+                #print(arm_count)
+
+
+        (arm_to_pull , arm_count) = np.unique(ls, return_counts = True)
+        arm_to_pull = arm_to_pull.tolist()
+        arm_count = arm_count.tolist()
+
         
-        return np.unique(ls, return_counts = True)
+        return arm_to_pull,arm_count
+        
         # END EDITING HERE
     
     def get_reward(self, arm_rewards):

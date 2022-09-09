@@ -1,0 +1,12 @@
+To create container
+docker run -v "/Users/balbirsingh/Desktop/CS747/test:/host" --name "test" -it docker.cse.iitb.ac.in/cs747
+
+To see all containers
+docker container ls -a
+
+To open container
+Start it in docker
+docker exec -it fb7d53abbb5c /bin/bash
+
+To go in host directory
+cd /host/

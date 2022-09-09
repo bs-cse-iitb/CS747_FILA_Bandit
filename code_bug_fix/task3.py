@@ -33,6 +33,7 @@ class AlgorithmManyArms:
         #self.success =np.zeros(self.num_arms)
         self.counts = np.zeros(self.num_arms)
         self.mean = np.zeros(self.num_arms)
+        #self.h=0
         #self.counter=0
         #self.limit = 0.9
     def give_pull(self):
@@ -44,12 +45,25 @@ class AlgorithmManyArms:
 
         # 
 
+        # step = round(((self.h+1) * 0.4)/(self.num_arms-1 ),2)
+        # #print(step)
+        # print((0.96-step))
+        # update = self.num_arms/10
+        # limit = 0.96
+        # if(self.h>update):
+        #     limit -= 0.04
+        #     update +=self.num_arms/10
+
+        # print(limit)
+        # if self.h==0:
+        #     self.h+=1
         highest_mean = np.argmax(self.mean)
-        if self.mean[highest_mean] > (1-1/self.num_arms):  # 0.99  for last 300
+        if self.mean[highest_mean] > 0.96:  # 0.99  for last 300
             return highest_mean
         else:
             return np.random.randint(self.num_arms) 
 
+    
         # sample = np.zeros(len(self.arms))
         # for arm in range(len(self.arms)):
         #     sample[arm]=np.random.beta(self.success[arm]+1,1)
@@ -63,7 +77,7 @@ class AlgorithmManyArms:
         
         #print(arm_index, reward)
         #print(self.arms)
-
+        # self.h+=1
         p_ = self.mean[arm_index]
         u = self.counts[arm_index]
         self.mean[arm_index]= (p_ * u + reward ) / (u+1)

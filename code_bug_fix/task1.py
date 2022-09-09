@@ -62,6 +62,43 @@ class Eps_Greedy(Algorithm):
 
 # START EDITING HERE
 # You can use this space to define any helper functions that you need
+def kl(x,y):
+    if x==0:
+        kl_value = -math.log((1-y))
+        return kl_value
+    if x==1:
+        kl_value = -math.log(y)
+        return kl_value
+    else:
+        ln1 = math.log(x/y)
+        ln2 = math.log((1-x)/(1-y))
+        kl_value = x * ln1 + (1-x) * ln2 
+        return kl_value
+def bs(p_,start,end,kl_p_q):
+    # middle = (start + end)/2
+    # #print(middle)
+    # kl_p_m = kl(p_,middle)
+    # #print(kl_p_m , kl_p_q)
+    # #return 0.5
+    # if abs(start-end) < 0.001 or abs(kl_p_m-kl_p_q) < 0.001:
+    #     return middle
+    # elif(kl_p_m > kl_p_q ):
+    #     return bs(p_,start,middle,kl_p_q) # return not written very big mistake
+    # else:
+    #     return bs(p_,middle,end,kl_p_q)
+
+    middle = (start + end)/2
+    kl_p_m = kl(p_,middle)
+
+
+    while(abs(start-end) > 0.0001 and abs(kl_p_m-kl_p_q) > 0.0001):
+        if(kl_p_m > kl_p_q ):
+            end = middle
+        else:
+            start = middle
+        middle = (start + end)/2
+        kl_p_m = kl(p_,middle)
+    return middle
 # END EDITING HERE
 
 class UCB(Algorithm):
@@ -111,44 +148,6 @@ class UCB(Algorithm):
                 self.ucb[arm]= self.mean[arm] + add_to_mean
                 # second mistake self.mean[arm_index] instead of self.mean[arm]
         # END EDITING HERE
-
-
-def kl(x,y):
-    if x==0:
-        kl_value = -math.log((1-y))
-        return kl_value
-    if x==1:
-        kl_value = -math.log(y)
-        return kl_value
-    else:
-        ln1 = math.log(x/y)
-        ln2 = math.log((1-x)/(1-y))
-        kl_value = x * ln1 + (1-x) * ln2 
-        return kl_value
-
-def bs(p_,start,end,kl_p_q):
-    # middle = (start + end)/2
-    # #print(middle)
-    # kl_p_m = kl(p_,middle)
-    # #print(kl_p_m , kl_p_q)
-    # #return 0.5
-    # if abs(start-end) < 0.001 or abs(kl_p_m-kl_p_q) < 0.001:
-    #     return middle
-    # elif(kl_p_m > kl_p_q ):
-    #     return bs(p_,start,middle,kl_p_q) # return not written very big mistake
-    # else:
-    #     return bs(p_,middle,end,kl_p_q)
-
-    middle = (start + end)/2
-    kl_p_m = kl(p_,middle)
-    while(abs(start-end) > 0.001 and abs(kl_p_m-kl_p_q) > 0.001):
-        if(kl_p_m > kl_p_q ):
-            end = middle
-        else:
-            start = middle
-        middle = (start + end)/2
-        kl_p_m = kl(p_,middle)
-    return middle
 
 
 
@@ -221,16 +220,14 @@ class Thompson_Sampling(Algorithm):
 
 
         # for every arm a draw  sample from beta distribution
-        # sample = np.zeros(self.num_arms)
-        # for arm in range(self.num_arms):
-        #     sample[arm]=np.random.beta(self.success[arm]+1,self.counts[arm]-self.success[arm]+1)
-        # #print(sample)
-        # return np.argmax(sample)
+        sample = np.zeros(self.num_arms)
+        for arm in range(self.num_arms):
+            sample[arm]=np.random.beta(self.success[arm]+1,self.counts[arm]-self.success[arm]+1)
+        #print(sample)
+        return np.argmax(sample)
         
-        
-
-        # in one line
-        return np.argmax(np.random.beta(self.success+1,self.counts-self.success+1))
+        # # in one line
+        # return np.argmax(np.random.beta(self.success+1,self.counts-self.success+1))
 
         # END EDITING HERE
 
