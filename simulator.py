@@ -115,13 +115,13 @@ if __name__ == '__main__':
   
   #task1(Eps_Greedy, probs)
   #task1(UCB, probs)
-  tic = time.time()
-  task1(KL_UCB, probs)
-  toc = time.time()
-  print(toc-tic)
+  # tic = time.time()
+  # task1(KL_UCB, probs)
+  # toc = time.time()
+  # print(toc-tic)
   #task1(Thompson_Sampling, probs)
 
-  # task2(AlgorithmBatched, probs)
+  task2(AlgorithmBatched, probs)
 
   #task3(AlgorithmManyArms)
 
