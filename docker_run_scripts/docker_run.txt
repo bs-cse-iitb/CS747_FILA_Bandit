@@ -8,5 +8,6 @@ To open container
 Start it in docker
 docker exec -it fb7d53abbb5c /bin/bash
 
+
 To go in host directory
 cd /host/

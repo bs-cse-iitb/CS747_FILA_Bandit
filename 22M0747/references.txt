@@ -1,0 +1,6 @@
+previous learning and assignment
+class slides ucb, kl_ucb, thompson_sampling 
+online video of sir from previous offering of course
+
+numpy.unique
+https://numpy.org/doc/stable/reference/generated/numpy.unique.html
